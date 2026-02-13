@@ -241,6 +241,28 @@ Licensed under the **PolyForm Noncommercial License 1.0.0**. See [LICENSE](LICEN
 
 For more information, visit: https://polyformproject.org/licenses/noncommercial/1.0.0
 
+## Testing
+
+Ledger includes comprehensive unit tests using the [doctest](https://github.com/doctest/doctest) framework. Tests cover:
+
+- Core logging components (sinks, formatters, context)
+- Thread safety and concurrent logging
+- File operations and log rotation
+- Structured logging and context management
+- Edge cases and special characters
+- Macro functionality
+
+See [TESTING.md](TESTING.md) for detailed instructions on building and running the test suite.
+
+### Quick Test Build
+
+```bash
+mkdir build && cd build
+cmake ..
+cmake --build .
+ctest
+```
+
 ## Contributing
 
 Contributions are welcome! Please ensure:
@@ -248,6 +270,7 @@ Contributions are welcome! Please ensure:
 - All changes are thread-safe
 - New features include appropriate error handling
 - Changes work across supported platforms
+- New features include corresponding unit tests
 
 ## Support
 

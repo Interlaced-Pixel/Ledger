@@ -1255,6 +1255,18 @@ public:
     {
       std::ostringstream oss;
       oss << "[" << std::put_time(&local_tm, "%Y-%m-%d %H:%M:%S") << "] [" << log_level_to_string(level) << "] " << message;
+      
+      // Add context key-value pairs to default format
+      const auto &context = LogContextStorage::get_all();
+      if (!context.empty())
+      {
+        oss << " |";
+        for (const auto &kv : context)
+        {
+          oss << " " << kv.first << "=" << kv.second;
+        }
+      }
+      
       formatted_message = oss.str();
 
       // Prefer sinks if available (early fast path)
@@ -1378,7 +1390,20 @@ public:
 
       // Format the message with file and line information
       std::ostringstream oss;
-      oss << "[" << std::put_time(&local_tm, "%Y-%m-%d %H:%M:%S") << "] [" << log_level_to_string(level) << "] " << message << " (" << filename << ":" << line << ")";
+      oss << "[" << std::put_time(&local_tm, "%Y-%m-%d %H:%M:%S") << "] [" << log_level_to_string(level) << "] " << message;
+      
+      // Add context key-value pairs to default format
+      const auto &context = LogContextStorage::get_all();
+      if (!context.empty())
+      {
+        oss << " |";
+        for (const auto &kv : context)
+        {
+          oss << " " << kv.first << "=" << kv.second;
+        }
+      }
+      
+      oss << " (" << filename << ":" << line << ")";
       formatted_message = oss.str();
 
       // Prefer sinks if available (early fast path)
