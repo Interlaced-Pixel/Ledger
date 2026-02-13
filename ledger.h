@@ -1,28 +1,15 @@
 /*
- * pixelLib
- * Copyright (c) 2025 Interlaced Pixel
+ * Ledger
+ * https://github.com/Interlaced-Pixel/Ledger
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Licensed under the PolyForm Noncommercial License 1.0.0
+ * https://polyformproject.org/licenses/noncommercial/1.0.0
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Required Notice: Copyright (c) 2025 Interlaced Pixel
  */
 
-#ifndef PIXELLIB_CORE_LOGGING_HPP
-#define PIXELLIB_CORE_LOGGING_HPP
+#ifndef LEDGER_H
+#define LEDGER_H
 
 #include <algorithm>
 #include <atomic>
@@ -59,7 +46,7 @@ inline void localtime_threadsafe(const std::time_t *time, std::tm *tm)
 }
 
 /**
- * @brief Core logging utilities for the pixelLib framework
+ * @brief Core logging utilities for the Ledger library
  *
  * This module provides a thread-safe logging system with multiple log levels
  * and configurable output destinations.
@@ -81,26 +68,26 @@ namespace logging
  * level is greater than or equal to the current log level setting.
  */
 // Numeric log level values for optional compile-time filtering
-#define PIXELLIB_LOG_LEVEL_TRACE 0
-#define PIXELLIB_LOG_LEVEL_DEBUG 1
-#define PIXELLIB_LOG_LEVEL_INFO 2
-#define PIXELLIB_LOG_LEVEL_WARNING 3
-#define PIXELLIB_LOG_LEVEL_ERROR 4
-#define PIXELLIB_LOG_LEVEL_FATAL 5
+#define LEDGER_LOG_LEVEL_TRACE 0
+#define LEDGER_LOG_LEVEL_DEBUG 1
+#define LEDGER_LOG_LEVEL_INFO 2
+#define LEDGER_LOG_LEVEL_WARNING 3
+#define LEDGER_LOG_LEVEL_ERROR 4
+#define LEDGER_LOG_LEVEL_FATAL 5
 
-#ifndef PIXELLIB_COMPILED_LOG_LEVEL
+#ifndef LEDGER_COMPILED_LOG_LEVEL
 // Default: enable all levels (TRACE and up)
-#define PIXELLIB_COMPILED_LOG_LEVEL PIXELLIB_LOG_LEVEL_TRACE
+#define LEDGER_COMPILED_LOG_LEVEL LEDGER_LOG_LEVEL_TRACE
 #endif
 
 enum LogLevel
 {
-  LOG_TRACE = PIXELLIB_LOG_LEVEL_TRACE,     ///< Trace-level messages, very verbose and fine-grained
-  LOG_DEBUG = PIXELLIB_LOG_LEVEL_DEBUG,     ///< Debug-level messages, typically for development only
-  LOG_INFO = PIXELLIB_LOG_LEVEL_INFO,       ///< Informational messages about normal operation
-  LOG_WARNING = PIXELLIB_LOG_LEVEL_WARNING, ///< Warning messages about potential issues
-  LOG_ERROR = PIXELLIB_LOG_LEVEL_ERROR,     ///< Error messages about serious problems
-  LOG_FATAL = PIXELLIB_LOG_LEVEL_FATAL      ///< Fatal errors that may require immediate attention
+  LOG_TRACE = LEDGER_LOG_LEVEL_TRACE,     ///< Trace-level messages, very verbose and fine-grained
+  LOG_DEBUG = LEDGER_LOG_LEVEL_DEBUG,     ///< Debug-level messages, typically for development only
+  LOG_INFO = LEDGER_LOG_LEVEL_INFO,       ///< Informational messages about normal operation
+  LOG_WARNING = LEDGER_LOG_LEVEL_WARNING, ///< Warning messages about potential issues
+  LOG_ERROR = LEDGER_LOG_LEVEL_ERROR,     ///< Error messages about serious problems
+  LOG_FATAL = LEDGER_LOG_LEVEL_FATAL      ///< Fatal errors that may require immediate attention
 };
 
 /**
@@ -1472,7 +1459,7 @@ public:
    *
    * @param message The debug message to log
    */
-#if PIXELLIB_COMPILED_LOG_LEVEL <= PIXELLIB_LOG_LEVEL_DEBUG
+#if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_DEBUG
   static void debug(const std::string &message)
   {
     log(LOG_DEBUG, message);
@@ -1570,7 +1557,7 @@ public:
   /**
    * @brief Log a trace message
    */
-#if PIXELLIB_COMPILED_LOG_LEVEL <= PIXELLIB_LOG_LEVEL_TRACE
+#if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_TRACE
   static void trace(const std::string &message)
   {
     log(LOG_TRACE, message);
@@ -2045,8 +2032,8 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_DEBUG("Message");
  */
-#if PIXELLIB_COMPILED_LOG_LEVEL <= PIXELLIB_LOG_LEVEL_TRACE
-#ifndef PIXELLIB_CORE_DISABLE_TRACE_LOGS
+#if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_TRACE
+#ifndef LEDGER_DISABLE_TRACE_LOGS
 #define LOG_TRACE(msg) pixellib::core::logging::Logger::trace(msg, __FILE__, __LINE__)
 #else
 #define LOG_TRACE(msg) (void)0
@@ -2055,8 +2042,8 @@ inline void Logger::async_shutdown()
 #define LOG_TRACE(msg) (void)0
 #endif
 
-#if PIXELLIB_COMPILED_LOG_LEVEL <= PIXELLIB_LOG_LEVEL_DEBUG
-#ifndef PIXELLIB_CORE_DISABLE_DEBUG_LOGS
+#if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_DEBUG
+#ifndef LEDGER_DISABLE_DEBUG_LOGS
 #define LOG_DEBUG(msg) pixellib::core::logging::Logger::debug(msg, __FILE__, __LINE__)
 #else
 #define LOG_DEBUG(msg) (void)0
@@ -2120,4 +2107,4 @@ inline void test_force_logging_error_messages(const std::string &msg)
 
 } // namespace pixellib
 
-#endif // PIXELLIB_CORE_LOGGING_HPP
+#endif // LEDGER_H
