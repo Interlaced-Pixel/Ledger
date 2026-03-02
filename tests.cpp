@@ -327,14 +327,14 @@ TEST_SUITE("Logger - Basic Functionality")
 {
   TEST_CASE("Logger sets log level")
   {
-    Logger::set_level(LOG_WARNING);
+    Ledger::set_level(LOG_WARNING);
     // Note: We can't directly verify the level, but we can test that it affects logging
 
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
     
-    Logger::info("Should not appear");
-    Logger::warning("Should appear");
+    Ledger::info("Should not appear");
+    Ledger::warning("Should appear");
 
     std::string output = oss.str();
     CHECK(output.find("Should appear") != std::string::npos);
@@ -343,10 +343,10 @@ TEST_SUITE("Logger - Basic Functionality")
   TEST_CASE("Logger logs info messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
-    Logger::set_level(LOG_INFO);
+    Ledger::set_output_streams(oss, oss);
+    Ledger::set_level(LOG_INFO);
 
-    Logger::info("Test info message");
+    Ledger::info("Test info message");
 
     std::string output = oss.str();
     CHECK(output.find("Test info message") != std::string::npos);
@@ -356,9 +356,9 @@ TEST_SUITE("Logger - Basic Functionality")
   TEST_CASE("Logger logs warning messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
-    Logger::warning("Test warning message");
+    Ledger::warning("Test warning message");
 
     std::string output = oss.str();
     CHECK(output.find("Test warning message") != std::string::npos);
@@ -368,9 +368,9 @@ TEST_SUITE("Logger - Basic Functionality")
   TEST_CASE("Logger logs error messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(std::cout, oss);
+    Ledger::set_output_streams(std::cout, oss);
 
-    Logger::error("Test error message");
+    Ledger::error("Test error message");
 
     std::string output = oss.str();
     CHECK(output.find("Test error message") != std::string::npos);
@@ -383,9 +383,9 @@ TEST_SUITE("Logger - Structured Logging")
   TEST_CASE("Logger supports key-value pairs")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
-    Logger::info("User action", "user_id", 123, "action", "login");
+    Ledger::info("User action", "user_id", 123, "action", "login");
 
     std::string output = oss.str();
     CHECK(output.find("User action") != std::string::npos);
@@ -396,12 +396,12 @@ TEST_SUITE("Logger - Structured Logging")
   TEST_CASE("Logger context is included in messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     {
       LogContext ctx;
       ctx.add("request_id", "req-123");
-      Logger::info("Processing request");
+      Ledger::info("Processing request");
     }
 
     std::string output = oss.str();
@@ -414,7 +414,7 @@ TEST_SUITE("Logger - Thread Safety")
   TEST_CASE("Logger handles concurrent logging from multiple threads")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     std::vector<std::thread> threads;
     for (int i = 0; i < 5; ++i)
@@ -422,7 +422,7 @@ TEST_SUITE("Logger - Thread Safety")
       threads.emplace_back([i]() {
         for (int j = 0; j < 10; ++j)
         {
-          Logger::info("Thread message", "thread_id", i, "iteration", j);
+          Ledger::info("Thread message", "thread_id", i, "iteration", j);
         }
       });
     }
@@ -443,9 +443,9 @@ TEST_SUITE("Logger - File Logging")
   TEST_CASE("Logger can write to file")
   {
     std::string filename = "test_logger.log";
-    Logger::set_file_logging(filename, 1000000, 5);
+    Ledger::set_file_logging(filename, 1000000, 5);
 
-    Logger::info("File logging test message");
+    Ledger::info("File logging test message");
 
     std::ifstream file(filename);
     std::string line;
@@ -462,7 +462,7 @@ TEST_SUITE("Logger - File Logging")
 
     CHECK(found);
 
-    Logger::set_file_logging(nullptr);
+    Ledger::set_file_logging(nullptr);
     std::filesystem::remove(filename);
   }
 }
@@ -472,34 +472,34 @@ TEST_SUITE("Logger - Formatters")
   TEST_CASE("Logger can use custom formatter")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     auto json_formatter = std::make_unique<JSONLogFormatter>();
-    Logger::set_formatter(std::move(json_formatter));
+    Ledger::set_formatter(std::move(json_formatter));
 
-    Logger::info("JSON formatted message");
+    Ledger::info("JSON formatted message");
 
     std::string output = oss.str();
     CHECK(output.find("{") != std::string::npos);
     CHECK(output.find("\"message\"") != std::string::npos);
 
-    Logger::set_formatter(nullptr);
+    Ledger::set_formatter(nullptr);
   }
 
   TEST_CASE("Logger can use custom formatter with prefix")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     auto formatter = std::make_unique<DefaultLogFormatter>(TimestampFormat::STANDARD, "APP");
-    Logger::set_formatter(std::move(formatter));
+    Ledger::set_formatter(std::move(formatter));
 
-    Logger::info("Prefixed message");
+    Ledger::info("Prefixed message");
 
     std::string output = oss.str();
     CHECK(output.find("APP") != std::string::npos);
 
-    Logger::set_formatter(nullptr);
+    Ledger::set_formatter(nullptr);
   }
 }
 
@@ -507,7 +507,7 @@ TEST_SUITE("Logger - Configuration")
 {
   TEST_CASE("LoggerConfigBuilder creates valid configuration")
   {
-    auto config = Logger::LoggerConfigBuilder()
+    auto config = Ledger::LoggerConfigBuilder()
                       .set_level(LOG_DEBUG)
                       .add_stream_sink(std::cout)
                       .set_formatter(std::make_unique<JSONLogFormatter>())
@@ -522,14 +522,14 @@ TEST_SUITE("Logger - Configuration")
   {
     std::ostringstream oss;
 
-    auto config = Logger::LoggerConfigBuilder()
+    auto config = Ledger::LoggerConfigBuilder()
                       .set_level(LOG_INFO)
                       .add_stream_sink(oss)
                       .build();
 
-    Logger::configure(std::move(config));
+    Ledger::configure(std::move(config));
 
-    Logger::info("Configured logger test");
+    Ledger::info("Configured logger test");
 
     CHECK(oss.str().find("Configured logger test") != std::string::npos);
   }
@@ -539,24 +539,24 @@ TEST_SUITE("Logger - Category Loggers")
 {
   TEST_CASE("CategoryLogger can be obtained and used")
   {
-    auto logger = Logger::get("database");
+    auto logger = Ledger::get("database");
     // Note: We test that it doesn't crash and is functional
     CHECK(true);
   }
 
   TEST_CASE("Different categories can have different configurations")
   {
-    auto db_logger = Logger::get("database");
-    auto api_logger = Logger::get("api");
+    auto db_logger = Ledger::get("database");
+    auto api_logger = Ledger::get("api");
 
     // Configure database logger
-    Logger::LoggerRegistry::set_config(
+    Ledger::LoggerRegistry::set_config(
         "database",
-        Logger::LoggerConfigBuilder()
+      Ledger::LoggerConfigBuilder()
             .set_level(LOG_DEBUG)
             .build());
 
-    CHECK(Logger::LoggerRegistry::has_config("database"));
+    CHECK(Ledger::LoggerRegistry::has_config("database"));
   }
 }
 
@@ -565,9 +565,9 @@ TEST_SUITE("Logger - Edge Cases")
   TEST_CASE("Logger handles empty messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
-    Logger::info("");
+    Ledger::info("");
 
     // Should not crash and should log something
     CHECK(oss.str().find("[INFO]") != std::string::npos);
@@ -576,10 +576,10 @@ TEST_SUITE("Logger - Edge Cases")
   TEST_CASE("Logger handles very long messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     std::string long_message(10000, 'x');
-    Logger::info(long_message);
+    Ledger::info(long_message);
 
     CHECK(oss.str().find("xxx") != std::string::npos);
   }
@@ -587,9 +587,9 @@ TEST_SUITE("Logger - Edge Cases")
   TEST_CASE("Logger handles special characters in messages")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
-    Logger::info("Message with special chars: \n\t\r\\\"");
+    Ledger::info("Message with special chars: \n\t\r\\\"");
 
     CHECK(oss.str().find("special") != std::string::npos);
   }
@@ -600,7 +600,7 @@ TEST_SUITE("Macros")
   TEST_CASE("LOG_INFO macro works")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     LOG_INFO("Macro test message");
 
@@ -611,7 +611,7 @@ TEST_SUITE("Macros")
   TEST_CASE("LOG_WARNING macro works")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(oss, oss);
+    Ledger::set_output_streams(oss, oss);
 
     LOG_WARNING("Warning via macro");
 
@@ -622,7 +622,7 @@ TEST_SUITE("Macros")
   TEST_CASE("LOG_ERROR macro works")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(std::cout, oss);
+    Ledger::set_output_streams(std::cout, oss);
 
     LOG_ERROR("Error via macro");
 
@@ -633,7 +633,7 @@ TEST_SUITE("Macros")
   TEST_CASE("LOG_FATAL macro works")
   {
     std::ostringstream oss;
-    Logger::set_output_streams(std::cout, oss);
+    Ledger::set_output_streams(std::cout, oss);
 
     LOG_FATAL("Fatal via macro");
 

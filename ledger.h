@@ -582,7 +582,7 @@ inline const std::unordered_map<std::string, std::string> &get_all()
  *   LogContext ctx;
  *   ctx.add("user_id", 123);
  *   ctx.add("request_id", "abc");
- *   Logger::info("User action"); // will include user_id=123 request_id=abc
+ *   Ledger::info("User action"); // will include user_id=123 request_id=abc
  * } // context automatically removed
  */
 class LogContext
@@ -800,10 +800,10 @@ public:
  * Example usage:
  * @code
  * using namespace ledger;
- * Logger::set_level(LOG_INFO);
- * Logger::info("Application started");
- * Logger::warning("This is a warning message");
- * Logger::error("An error occurred");
+ * Ledger::set_level(LOG_INFO);
+ * Ledger::info("Application started");
+ * Ledger::warning("This is a warning message");
+ * Ledger::error("An error occurred");
  * @endcode
  *
  * For more detailed logging with file and line information:
@@ -815,18 +815,18 @@ public:
  *
  * For structured logging with key-value pairs:
  * @code
- * Logger::info("User logged in", "user_id", 12345, "ip_address",
+ * Ledger::info("User logged in", "user_id", 12345, "ip_address",
  * "192.168.1.1");
  * @endcode
  *
  * For file logging with rotation:
  * @code
- * Logger::set_file_logging("app.log", 10485760, 5); // 10MB max size, 5 files
- * Logger::set_file_logging("app.log", std::chrono::hours(24), 7); // Daily
+ * Ledger::set_file_logging("app.log", 10485760, 5); // 10MB max size, 5 files
+ * Ledger::set_file_logging("app.log", std::chrono::hours(24), 7); // Daily
  * rotation, 7 files
  * @endcode
  */
-class Logger
+class Ledger
 {
 private:
   static LogLevel current_level;                          ///< Current minimum log level
@@ -1963,20 +1963,20 @@ private:
 };
 
 // Static member definitions
-inline LogLevel Logger::current_level = LOG_INFO;
-inline std::mutex Logger::log_mutex;
-inline std::ostream *Logger::output_stream = &std::cout;
-inline std::ostream *Logger::error_stream = &std::cerr;
-inline std::vector<std::unique_ptr<LogSink>> Logger::sinks;
-inline std::unique_ptr<LogFormatter> Logger::formatter = nullptr;
-inline std::unique_ptr<RotatingFileLogger> Logger::file_logger = nullptr;
+inline LogLevel Ledger::current_level = LOG_INFO;
+inline std::mutex Ledger::log_mutex;
+inline std::ostream *Ledger::output_stream = &std::cout;
+inline std::ostream *Ledger::error_stream = &std::cerr;
+inline std::vector<std::unique_ptr<LogSink>> Ledger::sinks;
+inline std::unique_ptr<LogFormatter> Ledger::formatter = nullptr;
+inline std::unique_ptr<RotatingFileLogger> Ledger::file_logger = nullptr;
 
 // Aggregate async logging metrics across sinks
-inline size_t Logger::get_async_dropped_count()
+inline size_t Ledger::get_async_dropped_count()
 {
-  std::lock_guard<std::mutex> lock(Logger::log_mutex);
+  std::lock_guard<std::mutex> lock(Ledger::log_mutex);
   size_t tot = 0;
-  for (auto &s : Logger::sinks)
+  for (auto &s : Ledger::sinks)
   {
     if (auto *a = dynamic_cast<AsyncLogSink *>(s.get()))
     {
@@ -1986,11 +1986,11 @@ inline size_t Logger::get_async_dropped_count()
   return tot;
 }
 
-inline size_t Logger::get_async_queue_size()
+inline size_t Ledger::get_async_queue_size()
 {
-  std::lock_guard<std::mutex> lock(Logger::log_mutex);
+  std::lock_guard<std::mutex> lock(Ledger::log_mutex);
   size_t tot = 0;
-  for (auto &s : Logger::sinks)
+  for (auto &s : Ledger::sinks)
   {
     if (auto *a = dynamic_cast<AsyncLogSink *>(s.get()))
     {
@@ -2000,10 +2000,10 @@ inline size_t Logger::get_async_queue_size()
   return tot;
 }
 
-inline void Logger::async_flush()
+inline void Ledger::async_flush()
 {
-  std::lock_guard<std::mutex> lock(Logger::log_mutex);
-  for (auto &s : Logger::sinks)
+  std::lock_guard<std::mutex> lock(Ledger::log_mutex);
+  for (auto &s : Ledger::sinks)
   {
     if (auto *a = dynamic_cast<AsyncLogSink *>(s.get()))
     {
@@ -2012,10 +2012,10 @@ inline void Logger::async_flush()
   }
 }
 
-inline void Logger::async_shutdown()
+inline void Ledger::async_shutdown()
 {
-  std::lock_guard<std::mutex> lock(Logger::log_mutex);
-  for (auto &s : Logger::sinks)
+  std::lock_guard<std::mutex> lock(Ledger::log_mutex);
+  for (auto &s : Ledger::sinks)
   {
     if (auto *a = dynamic_cast<AsyncLogSink *>(s.get()))
     {
@@ -2035,7 +2035,7 @@ inline void Logger::async_shutdown()
  *   LogContext ctx;
  *   ctx.add("user_id", 123);
  *   ctx.add("request_id", "abc");
- *   Logger::info("User action"); // will include user_id=123 request_id=abc
+ *   Ledger::info("User action"); // will include user_id=123 request_id=abc
  * } // context automatically removed
  */
 
@@ -2047,7 +2047,7 @@ inline void Logger::async_shutdown()
  */
 #if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_TRACE
 #ifndef LEDGER_DISABLE_TRACE_LOGS
-#define LOG_TRACE(msg) ledger::Logger::trace(msg, __FILE__, __LINE__)
+#define LOG_TRACE(msg) ledger::Ledger::trace(msg, __FILE__, __LINE__)
 #else
 #define LOG_TRACE(msg) (void)0
 #endif
@@ -2057,7 +2057,7 @@ inline void Logger::async_shutdown()
 
 #if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_DEBUG
 #ifndef LEDGER_DISABLE_DEBUG_LOGS
-#define LOG_DEBUG(msg) ledger::Logger::debug(msg, __FILE__, __LINE__)
+#define LOG_DEBUG(msg) ledger::Ledger::debug(msg, __FILE__, __LINE__)
 #else
 #define LOG_DEBUG(msg) (void)0
 #endif
@@ -2071,7 +2071,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_INFO("Message");
  */
-#define LOG_INFO(msg) ledger::Logger::info(msg, __FILE__, __LINE__)
+#define LOG_INFO(msg) ledger::Ledger::info(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging fatal messages with file and
@@ -2079,7 +2079,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_FATAL("Message");
  */
-#define LOG_FATAL(msg) ledger::Logger::fatal(msg, __FILE__, __LINE__)
+#define LOG_FATAL(msg) ledger::Ledger::fatal(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging warning messages with file and line
@@ -2087,7 +2087,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_WARNING("Message");
  */
-#define LOG_WARNING(msg) ledger::Logger::warning(msg, __FILE__, __LINE__)
+#define LOG_WARNING(msg) ledger::Ledger::warning(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging error messages with file and line
@@ -2095,7 +2095,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_ERROR("Message");
  */
-#define LOG_ERROR(msg) ledger::Logger::error(msg, __FILE__, __LINE__)
+#define LOG_ERROR(msg) ledger::Ledger::error(msg, __FILE__, __LINE__)
 
 // Test helpers: small functions to exercise edge-case cleanup and error printing paths in tests
 inline void test_force_clear_stream(std::ostream &s)

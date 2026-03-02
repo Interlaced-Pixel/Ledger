@@ -44,32 +44,32 @@ This is a header-only library. Include `ledger.h` in your project and compile wi
 using namespace ledger;
 
 // Simple logging
-Logger::info("Application started");
-Logger::warning("This is a warning");
-Logger::error("An error occurred");
+Ledger::info("Application started");
+Ledger::warning("This is a warning");
+Ledger::error("An error occurred");
 ```
 
 ### Setting Log Levels
 
 ```cpp
-Logger::set_level(LOG_DEBUG);  // Enable all logs at DEBUG level and above
-Logger::set_level(LOG_WARNING); // Only WARNING, ERROR, and FATAL
+Ledger::set_level(LOG_DEBUG);  // Enable all logs at DEBUG level and above
+Ledger::set_level(LOG_WARNING); // Only WARNING, ERROR, and FATAL
 ```
 
 ### File Logging with Rotation
 
 ```cpp
 // Size-based rotation (10MB files, keep 5 files)
-Logger::set_file_logging("app.log", 10485760, 5);
+Ledger::set_file_logging("app.log", 10485760, 5);
 
 // Time-based rotation (daily rotation, keep 7 files)
-Logger::set_file_logging("app.log", std::chrono::hours(24), 7);
+Ledger::set_file_logging("app.log", std::chrono::hours(24), 7);
 ```
 
 ### Structured Logging with Key-Value Pairs
 
 ```cpp
-Logger::info("User action performed", 
+Ledger::info("User action performed", 
             "user_id", 12345, 
             "action", "login",
             "ip_address", "192.168.1.1");
@@ -84,8 +84,8 @@ Logger::info("User action performed",
     ctx.add("request_id", "abc-123");
     ctx.add("user_id", 42);
     
-    Logger::info("Processing request");  // Automatically includes context
-    Logger::debug("Detailed processing");  // Context included here too
+    Ledger::info("Processing request");  // Automatically includes context
+    Ledger::debug("Detailed processing");  // Context included here too
 } // Context automatically cleared on scope exit
 ```
 
@@ -93,10 +93,10 @@ Logger::info("User action performed",
 
 ```cpp
 // Use JSON formatter
-Logger::set_formatter(std::make_unique<JSONLogFormatter>());
+Ledger::set_formatter(std::make_unique<JSONLogFormatter>());
 
 // Use custom timestamp format
-Logger::set_formatter(
+Ledger::set_formatter(
     std::make_unique<DefaultLogFormatter>(
         TimestampFormat::ISO8601,
         "MyApp"
@@ -113,20 +113,20 @@ auto async_sink = std::make_unique<AsyncLogSink>(
     AsyncLogSink::DropPolicy::DROP_NEWEST
 );
 
-Logger::add_sink(std::move(async_sink));
+Ledger::add_sink(std::move(async_sink));
 
 // Flush remaining messages
-Logger::async_flush();
+Ledger::async_flush();
 
 // Shutdown cleanly
-Logger::async_shutdown();
+Ledger::async_shutdown();
 ```
 
 ### Fluent Configuration API
 
 ```cpp
-Logger::configure(
-    Logger::LoggerConfigBuilder()
+Ledger::configure(
+  Ledger::LoggerConfigBuilder()
         .set_level(LOG_DEBUG)
         .add_stream_sink(std::cout)
         .add_async_file_sink("app.log", 1024, AsyncLogSink::DropPolicy::DROP_NEWEST)
@@ -138,16 +138,16 @@ Logger::configure(
 ### Category Loggers
 
 ```cpp
-auto db_logger = Logger::get("database");
+auto db_logger = Ledger::get("database");
 db_logger.info("Connected to database");
 
-auto api_logger = Logger::get("api");
+auto api_logger = Ledger::get("api");
 api_logger.warning("High latency detected");
 
 // Configure category-specific settings
-Logger::LoggerRegistry::set_config(
-    "database",
-    Logger::LoggerConfigBuilder()
+Ledger::LoggerRegistry::set_config(
+  "database",
+  Ledger::LoggerConfigBuilder()
         .set_level(LOG_DEBUG)
         .add_file_sink("database.log")
         .build()
@@ -221,12 +221,12 @@ public:
     }
 };
 
-Logger::add_sink(std::make_unique<CustomSink>());
+Ledger::add_sink(std::make_unique<CustomSink>());
 ```
 
 ### Error Handling
 
-The logger is designed to be robust:
+Ledger is designed to be robust:
 - IO errors fall back to stderr
 - Exceptions in sinks are caught and logged to stderr
 - Stream state errors are recovered via `clear()`
