@@ -17,7 +17,7 @@
 #include <fstream>
 #include <filesystem>
 
-using namespace pixellib::core::logging;
+using namespace ledger;
 
 TEST_SUITE("LogLevel")
 {

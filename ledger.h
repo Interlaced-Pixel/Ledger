@@ -51,13 +51,7 @@ inline void localtime_threadsafe(const std::time_t *time, std::tm *tm)
  * This module provides a thread-safe logging system with multiple log levels
  * and configurable output destinations.
  */
-namespace pixellib
-{
-
-namespace core
-{
-
-namespace logging
+namespace ledger
 {
 
 /**
@@ -536,9 +530,7 @@ public:
   }
 };
 
-} // namespace logging
-} // namespace core
-} // namespace pixellib
+} // namespace ledger
 
 // Global thread-local log context storage
 namespace
@@ -553,11 +545,7 @@ inline std::unordered_map<std::string, std::string> &get_log_context()
 /**
  * @brief Thread-local storage for log context
  */
-namespace pixellib
-{
-namespace core
-{
-namespace logging
+namespace ledger
 {
 namespace LogContextStorage
 {
@@ -811,7 +799,7 @@ public:
  *
  * Example usage:
  * @code
- * using namespace pixellib::core::logging;
+ * using namespace ledger;
  * Logger::set_level(LOG_INFO);
  * Logger::info("Application started");
  * Logger::warning("This is a warning message");
@@ -2059,7 +2047,7 @@ inline void Logger::async_shutdown()
  */
 #if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_TRACE
 #ifndef LEDGER_DISABLE_TRACE_LOGS
-#define LOG_TRACE(msg) pixellib::core::logging::Logger::trace(msg, __FILE__, __LINE__)
+#define LOG_TRACE(msg) ledger::Logger::trace(msg, __FILE__, __LINE__)
 #else
 #define LOG_TRACE(msg) (void)0
 #endif
@@ -2069,7 +2057,7 @@ inline void Logger::async_shutdown()
 
 #if LEDGER_COMPILED_LOG_LEVEL <= LEDGER_LOG_LEVEL_DEBUG
 #ifndef LEDGER_DISABLE_DEBUG_LOGS
-#define LOG_DEBUG(msg) pixellib::core::logging::Logger::debug(msg, __FILE__, __LINE__)
+#define LOG_DEBUG(msg) ledger::Logger::debug(msg, __FILE__, __LINE__)
 #else
 #define LOG_DEBUG(msg) (void)0
 #endif
@@ -2083,7 +2071,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_INFO("Message");
  */
-#define LOG_INFO(msg) pixellib::core::logging::Logger::info(msg, __FILE__, __LINE__)
+#define LOG_INFO(msg) ledger::Logger::info(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging fatal messages with file and
@@ -2091,7 +2079,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_FATAL("Message");
  */
-#define LOG_FATAL(msg) pixellib::core::logging::Logger::fatal(msg, __FILE__, __LINE__)
+#define LOG_FATAL(msg) ledger::Logger::fatal(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging warning messages with file and line
@@ -2099,7 +2087,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_WARNING("Message");
  */
-#define LOG_WARNING(msg) pixellib::core::logging::Logger::warning(msg, __FILE__, __LINE__)
+#define LOG_WARNING(msg) ledger::Logger::warning(msg, __FILE__, __LINE__)
 
 /**
  * @brief Convenience macro for logging error messages with file and line
@@ -2107,7 +2095,7 @@ inline void Logger::async_shutdown()
  *
  * Usage: LOG_ERROR("Message");
  */
-#define LOG_ERROR(msg) pixellib::core::logging::Logger::error(msg, __FILE__, __LINE__)
+#define LOG_ERROR(msg) ledger::Logger::error(msg, __FILE__, __LINE__)
 
 // Test helpers: small functions to exercise edge-case cleanup and error printing paths in tests
 inline void test_force_clear_stream(std::ostream &s)
@@ -2126,10 +2114,6 @@ inline void test_force_logging_error_messages(const std::string &msg)
   std::cerr << msg << std::endl;
 }
 
-} // namespace logging
-
-} // namespace core
-
-} // namespace pixellib
+} // namespace ledger
 
 #endif // LEDGER_H

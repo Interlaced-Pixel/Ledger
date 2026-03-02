@@ -41,7 +41,7 @@ This is a header-only library. Include `ledger.h` in your project and compile wi
 ### Basic Logging
 
 ```cpp
-using namespace pixellib::core::logging;
+using namespace ledger;
 
 // Simple logging
 Logger::info("Application started");
